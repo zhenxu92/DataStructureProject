@@ -72,14 +72,14 @@ public class TimedResponseGame extends JFrame {
     private class StopButtonHandler implements ActionListener {
     	public void actionPerformed(ActionEvent e) {
     		timeElapsed = System.nanoTime() - startTime;
-    		long elapsedMilliseconds = TimeUnit.NANOSECONDS.toMillis(timeElapsed) - 3000;
-    		long millisecondsOff = Math.abs(elapsedMilliseconds);
+    		long millisTimeElapsed = TimeUnit.NANOSECONDS.toMillis(timeElapsed);
+    		long timeDiff = millisTimeElapsed - 3000;
     		String output;
-    		if (millisecondsOff <= 100)
-    			output = "Nice! You were only " + Long.toString(millisecondsOff) + " milliseconds ";
+    		if (timeDiff <= 100 && timeDiff >= -100)
+    			output = "Nice! You were only " + Long.toString(timeDiff) + " milliseconds ";
     		else
-    			output = "You were " + Long.toString(millisecondsOff) + " milliseconds ";
-    		output += (elapsedMilliseconds < 0)? "early." : "late.";
+    			output = "You were " + Long.toString(timeDiff) + " milliseconds ";
+    		output += (timeDiff < 0)? "early." : "later.";
     		result.setText(output);
     	}
     }
