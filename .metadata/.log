@@ -107,3 +107,13 @@ Java Model Exception: Java Model Status [<project root> [in TimedResponseGame] i
 	at org.eclipse.equinox.launcher.Main.run(Main.java:1465)
 !SUBENTRY 1 org.eclipse.jdt.core 4 1006 2016-01-06 19:58:55.293
 !MESSAGE <project root> [in TimedResponseGame] is not on its project's build path
+!SESSION 2016-01-11 15:49:09.171 -----------------------------------------------
+eclipse.buildId=4.4.2.M20150204-1700
+java.version=1.8.0_05
+java.vendor=Oracle Corporation
+BootLoader constants: OS=macosx, ARCH=x86_64, WS=cocoa, NL=en_US
+Framework arguments:  -product org.eclipse.epp.package.java.product -keyring /Users/shayne93/.eclipse_keyring -showlocation
+Command-line arguments:  -os macosx -ws cocoa -arch x86_64 -product org.eclipse.epp.package.java.product -keyring /Users/shayne93/.eclipse_keyring -showlocation
+
+!ENTRY org.eclipse.core.resources 2 10035 2016-01-11 15:49:27.210
+!MESSAGE The workspace exited with unsaved changes in the previous session; refreshing workspace to recover changes.

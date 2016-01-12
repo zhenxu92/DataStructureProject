@@ -199,17 +199,15 @@ public class ImageEnhancerWithUndoAndRedo extends Component implements ActionLis
         //	undoing and dispose of any redoable actions.
         //  Also add code to enable and disable the Undo and Redo menu items, and to process
         //  these items when the user selects them.
-    	if (e.getSource() == undoItem) {
-    		biFiltered = undoStack.pop();
-    		
-    	}
+    	if (e.getSource() == undoItem) biFiltered = undoStack.pop();	
+    	else undoStack.push(biFiltered);
     	
     	if (undoStack.isEmpty()) undoItem.setEnabled(false);
     	else undoItem.setEnabled(true);
     	if (redoStack.isEmpty()) undoItem.setEnabled(false);
     	else redoItem.setEnabled(true);
 
-    	//System.out.println("The actionEvent is "+e); // This can be useful when debugging.
+    	System.out.println("The actionEvent is "+e); // This can be useful when debugging.
     	if (e.getSource()==exitItem) { System.exit(0); }
     	if (e.getSource()==blurItem) { blur();}
     	if (e.getSource()==sharpenItem) { sharpen(); }
