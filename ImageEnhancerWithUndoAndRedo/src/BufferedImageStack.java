@@ -1,11 +1,14 @@
-/*
+/**
  * BufferedImageStack.java
- * Copyright Jan 11, 2016 by Shen Jiang
  * 
- * This class implement a stack of BufferedImage objects with using ArrayList to 
+ * This class implements a stack of BufferedImage objects with using ArrayList to 
  * hold the elements of buffered image stack.
  * 
- * */
+ * @author Shen Jiang
+ * @version 1.0
+ * @since 2016-01-13
+ * 
+ */
 
 import java.util.*;
 import java.awt.image.BufferedImage;
@@ -13,15 +16,30 @@ import java.awt.image.BufferedImage;
 public class BufferedImageStack {
 	List<BufferedImage> imageStack;
 	
+    /**
+     * Class Constructor
+     */
 	public BufferedImageStack() {
 		imageStack = new ArrayList<BufferedImage>();
 	}
 	
+	/**
+	 * This method is used to push a BufferedImage into the stack.
+	 * 
+	 * @param bi  a BufferedImage.
+	 */
 	public void push(BufferedImage bi) {
 		imageStack.add(bi);
 	}
 	
-	public BufferedImage pop() {
+	/**
+	 * This method is used to pop the BufferedImage at the top 
+	 * of the stack.
+	 * 
+	 * @return popped BufferedImage.
+	 * @throws EmptyStackException When stack is empty.
+	 */
+	public BufferedImage pop() throws EmptyStackException {
 		if (this.isEmpty())
 			throw new EmptyStackException();
 		int lastIndex = this.getSize() - 1;
@@ -29,7 +47,14 @@ public class BufferedImageStack {
 	    return bi;
 	}
 	
-	public BufferedImage peek() {
+	/**
+	 * This method is used to peek the BufferedImage at the top 
+	 * of the stack.
+	 * 
+	 * @return peeked BufferedImage
+	 * @throws EmptyStackException When stack is empty.
+	 */
+	public BufferedImage peek() throws EmptyStackException {
 		if (this.isEmpty())
 			throw new EmptyStackException();
 		int lastIndex = this.getSize() - 1;
@@ -37,19 +62,36 @@ public class BufferedImageStack {
 	    return bi;
 	}
 	
+	/**
+	 * This method is used to tell whether the stack is empty.
+	 * 
+	 * @return <code>true</code> is the stack is empty, 
+	 *         <code>false</code> otherwise.
+	 */
 	public boolean isEmpty() {
 		if (imageStack.isEmpty())
 			return true;
 		return false;
 	}
 	
+	/**
+	 * This method is used to clear all the elements in the stack.
+	 * */
 	public void clearAll() {
 		while (!this.isEmpty()) {
 			this.pop();
 		}
 	}
 	
-	public BufferedImage get(int index) {
+	/**
+	 * This method is used to get the corresponding BufferedImage 
+	 * at some index.
+	 * 
+	 * @param index index integer.
+	 * @return BufferedImage at some index.
+	 * @throws IndexOutOfBoundsException If index is illegal.
+	 */
+	public BufferedImage get(int index) throws IndexOutOfBoundsException {
 		int range = this.getSize() - 1;
 		if (index < 0 || index > range) {
 			throw new IndexOutOfBoundsException();
@@ -58,6 +100,11 @@ public class BufferedImageStack {
 		return imageStack.get(index);
 	}
 	
+	/**
+	 * This method is used to get the size of the stack.
+	 * 
+	 * @return the size of the stack.
+	 */
 	public int getSize() {
 		return imageStack.size();
 	}

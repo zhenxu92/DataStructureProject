@@ -60,6 +60,10 @@ public class ImageEnhancerWithUndoAndRedo extends Component implements ActionLis
     BufferedImageStack undoStack;
     BufferedImageStack redoStack;
     
+    // Another variable declared by student(Shen Jiang) in order to track whether undo was just 
+    // performed or not
+    boolean isUndoPerformed;
+    
 
     // A 3x3 filtering kernel for high-pass filtering:
     public static final float[] highPass = {
@@ -111,6 +115,7 @@ public class ImageEnhancerWithUndoAndRedo extends Component implements ActionLis
     	
     	undoItem.setEnabled(false);
     	redoItem.setEnabled(false);
+    	
     	
     }
     void setUpImageTransformations() {
@@ -167,6 +172,9 @@ public class ImageEnhancerWithUndoAndRedo extends Component implements ActionLis
         undoStack = new BufferedImageStack();
         redoStack = new BufferedImageStack();
         
+        // Set isUndoPerformed to be false by default
+        isUndoPerformed = false;
+        
     }
 
     public Dimension getPreferredSize() {
@@ -199,25 +207,56 @@ public class ImageEnhancerWithUndoAndRedo extends Component implements ActionLis
         //	undoing and dispose of any redoable actions.
         //  Also add code to enable and disable the Undo and Redo menu items, and to process
         //  these items when the user selects them.
-    	if (e.getSource() == undoItem) biFiltered = undoStack.pop();	
-    	else undoStack.push(biFiltered);
-    	
-    	if (undoStack.isEmpty()) undoItem.setEnabled(false);
-    	else undoItem.setEnabled(true);
-    	if (redoStack.isEmpty()) undoItem.setEnabled(false);
-    	else redoItem.setEnabled(true);
 
-    	System.out.println("The actionEvent is "+e); // This can be useful when debugging.
+    	//System.out.println("The actionEvent is "+e); // This can be useful when debugging.
     	if (e.getSource()==exitItem) { System.exit(0); }
     	if (e.getSource()==blurItem) { blur();}
     	if (e.getSource()==sharpenItem) { sharpen(); }
     	if (e.getSource()==darkenItem) { darken(); }
     	if (e.getSource()==photoNegItem) { photoneg(); }
     	if (e.getSource()==thresholdItem) { threshold(); }
+    	
+    	if (e.getSource() == undoItem) {
+    		biFiltered = undoStack.pop();
+    		isUndoPerformed = true;
+    	}
+    	// Create a copy of biWorking and put it into undoStack
+    	else { undoStack.push(copyImage(biWorking)); }  
+    			
+    	if (isUndoPerformed) {
+    		redoStack.push(copyImage(biWorking));
+    		isUndoPerformed = false;
+    	}
+    	if (e.getSource() == redoItem) biFiltered = redoStack.pop();
+    	// Make sure that the re-do is effective only when undo is just performed!
+    	if (e.getSource() != undoItem && e.getSource() != redoItem) {
+    		redoStack.clearAll();
+    	}
+    	
+    	// Enable and disable the Undo and Redo menu items.
+    	if (undoStack.isEmpty()) { undoItem.setEnabled(false); }
+    	else { undoItem.setEnabled(true); }
+    	if (redoStack.isEmpty()) { redoItem.setEnabled(false); }
+    	else { redoItem.setEnabled(true); }
+    	
         gWorking.drawImage(biFiltered, 0, 0, null); // Draw the pixels from biFiltered into biWorking.
         repaint(); // Ask Swing to update the screen.
-        printNumbersOfElementsInBothStacks(); // Report on the states of the stacks.
+        printNumbersOfElementsInBothStacks(); // Report on the states of the stacks.  	  	
         return;     	
+    }
+    
+    /**
+     * This method is a helper function used to create a copy of existing BufferedImage.
+     * 
+     * @param source a BufferedImage need to be copied.
+     * @return a copy BufferedImage.
+     */
+    private static BufferedImage copyImage(BufferedImage source) {
+        BufferedImage bi = new BufferedImage(source.getWidth(), source.getHeight(), source.getType());
+        Graphics g = bi.getGraphics();
+        g.drawImage(source, 0, 0, null);
+        g.dispose();
+        return bi;
     }
 
     private ImageEnhancerWithUndoAndRedo image_enhancer_instance;
@@ -250,7 +289,7 @@ public class ImageEnhancerWithUndoAndRedo extends Component implements ActionLis
     public void printNumbersOfElementsInBothStacks() {
     	//  CSE 373 Students: Uncomment this code that prints out the numbers of elements
     	//  in each of the two stacks (Undo and Redo):
-        //System.out.println("The Undo stack contains " + undoStack.getSize() + " elements.");
-        //System.out.println("The Redo stack contains " + redoStack.getSize() + " elements.");
+        System.out.println("The Undo stack contains " + undoStack.getSize() + " elements.");
+        System.out.println("The Redo stack contains " + redoStack.getSize() + " elements.");
     }
 }
