@@ -1,15 +1,12 @@
 /*
  * ImageEnhancerWithUndoAndRedo.java
  * 
- * Also Implements A2E1 and A2E2
- * 
  * by Shen Jiang for CSE373 Assignment 2, Winter, 2016
  * This program is an enhanced version of one provides by
  * 
  * (c) By Steve Tanimoto,  January 2, 2016,
  * with contributions by Si J. Liu, 
  * and originally inspired by a tutorial example at Oracle.com.
- * 
  * This image-editing application includes support for semi-automated grading
  * when used in the CSE 373 course assignment on applying stacks and queues.
  * [CSE 373, Winter 2016, Assignment 2.]
@@ -78,6 +75,7 @@ public class ImageEnhancerWithUndoAndRedo extends Component implements ActionLis
     // performed or not
     boolean isUndoPerformed;
     
+
     // A 3x3 filtering kernel for high-pass filtering:
     public static final float[] highPass = {
         0.f, -1.f,  0.f,
@@ -203,17 +201,13 @@ public class ImageEnhancerWithUndoAndRedo extends Component implements ActionLis
         loadFileChooser = new JFileChooser();
         saveFileChooser = new JFileChooser();
         
-        loadFileChooser.setDialogTitle("Load Image...");
-        saveFileChooser.setDialogTitle("Save As...");
+        FileNameExtensionFilter loadFilter = new FileNameExtensionFilter(
+                "JPG & GIF & PNG Images", "jpg", "gif", "png");
+        loadFileChooser.setFileFilter(loadFilter);
         
-        FileNameExtensionFilter loadFilter = new FileNameExtensionFilter("Images(jpg/png/gif)", "jpg", "png", "gif");
-        FileNameExtensionFilter saveFilter = new FileNameExtensionFilter("Images(jpg/png/gif/JPG/PNG/GIF)",
-        		                                                         "jpg", "png", "gif", "JPG", "PNG", "GIF");
-        
-        loadFileChooser.addChoosableFileFilter(loadFilter);
-        loadFileChooser.setAcceptAllFileFilterUsed(true);
-        saveFileChooser.addChoosableFileFilter(saveFilter);
-        saveFileChooser.setAcceptAllFileFilterUsed(true);
+        FileNameExtensionFilter saveFilter = new FileNameExtensionFilter(
+                "JPG & GIF & PNG Images", "jpg", "gif", "png", "JPG", "GIF", "PNG");
+        loadFileChooser.setFileFilter(saveFilter);
              
     }
 
@@ -277,8 +271,7 @@ public class ImageEnhancerWithUndoAndRedo extends Component implements ActionLis
     		if (retVal == JFileChooser.APPROVE_OPTION) {
     			try {
     				File savedFile = saveFileChooser.getSelectedFile();
-    				String extension = savedFile.getName().substring(savedFile.getName().lastIndexOf('.') + 1); 				
-    				ImageIO.write(biWorking, extension, savedFile);
+    				ImageIO.write(biWorking, "png", savedFile);
     			} catch (IOException e2) {
     	            System.out.println("Image could not be saved: "+ saveFileChooser.getSelectedFile().getName());
     	            System.exit(1);

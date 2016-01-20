@@ -1,15 +1,12 @@
 /*
  * ImageEnhancerWithUndoAndRedo.java
  * 
- * Also Implements A2E1 and A2E2
- * 
  * by Shen Jiang for CSE373 Assignment 2, Winter, 2016
  * This program is an enhanced version of one provides by
  * 
  * (c) By Steve Tanimoto,  January 2, 2016,
  * with contributions by Si J. Liu, 
  * and originally inspired by a tutorial example at Oracle.com.
- * 
  * This image-editing application includes support for semi-automated grading
  * when used in the CSE 373 course assignment on applying stacks and queues.
  * [CSE 373, Winter 2016, Assignment 2.]
@@ -76,8 +73,9 @@ public class ImageEnhancerWithUndoAndRedo extends Component implements ActionLis
     
     // Another variable declared by student(Shen Jiang) in order to track whether undo was just 
     // performed or not
-    boolean isUndoPerformed;
+    boolean isUndoPerformed, isRedoPerformed;
     
+
     // A 3x3 filtering kernel for high-pass filtering:
     public static final float[] highPass = {
         0.f, -1.f,  0.f,
@@ -114,7 +112,7 @@ public class ImageEnhancerWithUndoAndRedo extends Component implements ActionLis
         photoNegItem.addActionListener(this);
         thresholdItem.addActionListener(this);
 
-    	
+    	fileMenu.add(exitItem);
     	editMenu.add(undoItem);
     	editMenu.add(redoItem);
     	imageMenu.add(darkenItem);
@@ -135,7 +133,6 @@ public class ImageEnhancerWithUndoAndRedo extends Component implements ActionLis
     	
     	fileMenu.add(loadItem);
     	fileMenu.add(saveItem);
-    	fileMenu.add(exitItem);
     	
     	undoItem.setEnabled(false);
     	redoItem.setEnabled(false);
@@ -198,22 +195,19 @@ public class ImageEnhancerWithUndoAndRedo extends Component implements ActionLis
         
         // Set isUndoPerformed to be false by default
         isUndoPerformed = false;
+        isRedoPerformed = false;
         
         // Set FileChoosers for load and save image.
         loadFileChooser = new JFileChooser();
         saveFileChooser = new JFileChooser();
         
-        loadFileChooser.setDialogTitle("Load Image...");
-        saveFileChooser.setDialogTitle("Save As...");
+        FileNameExtensionFilter loadFilter = new FileNameExtensionFilter(
+                "JPG & GIF & PNG Images", "jpg", "gif", "png");
+        loadFileChooser.setFileFilter(loadFilter);
         
-        FileNameExtensionFilter loadFilter = new FileNameExtensionFilter("Images(jpg/png/gif)", "jpg", "png", "gif");
-        FileNameExtensionFilter saveFilter = new FileNameExtensionFilter("Images(jpg/png/gif/JPG/PNG/GIF)",
-        		                                                         "jpg", "png", "gif", "JPG", "PNG", "GIF");
-        
-        loadFileChooser.addChoosableFileFilter(loadFilter);
-        loadFileChooser.setAcceptAllFileFilterUsed(true);
-        saveFileChooser.addChoosableFileFilter(saveFilter);
-        saveFileChooser.setAcceptAllFileFilterUsed(true);
+        FileNameExtensionFilter saveFilter = new FileNameExtensionFilter(
+                "JPG & GIF & PNG Images", "jpg", "gif", "png", "JPG", "GIF", "PNG");
+        loadFileChooser.setFileFilter(saveFilter);
              
     }
 
@@ -277,14 +271,12 @@ public class ImageEnhancerWithUndoAndRedo extends Component implements ActionLis
     		if (retVal == JFileChooser.APPROVE_OPTION) {
     			try {
     				File savedFile = saveFileChooser.getSelectedFile();
-    				String extension = savedFile.getName().substring(savedFile.getName().lastIndexOf('.') + 1); 				
-    				ImageIO.write(biWorking, extension, savedFile);
+    				ImageIO.write(biWorking, "png", savedFile);
     			} catch (IOException e2) {
     	            System.out.println("Image could not be saved: "+ saveFileChooser.getSelectedFile().getName());
     	            System.exit(1);
     			}
-    		}
-    		return;
+    		}  		
     	}
     	
     	if (e.getSource()==exitItem) { System.exit(0); }
@@ -307,11 +299,13 @@ public class ImageEnhancerWithUndoAndRedo extends Component implements ActionLis
     	}
     	if (e.getSource() == redoItem) {
     		biFiltered = redoStack.pop();
+    		isRedoPerformed = true;
     	}
     	
     	// Make sure that the re-do is effective only when undo is just performed!
     	if (e.getSource() != undoItem && e.getSource() != redoItem) {
     		redoStack.clearAll();
+    		isRedoPerformed = false;
     	}
     	
     	// Enable and disable the Undo and Redo menu items.
@@ -321,7 +315,7 @@ public class ImageEnhancerWithUndoAndRedo extends Component implements ActionLis
     	else { redoItem.setEnabled(true); }
     	
     	// Save Item cannot be used during undo and redo steps. 
-    	if (isUndoPerformed || !redoStack.isEmpty()) {
+    	if (isUndoPerformed || isRedoPerformed) {
     		saveItem.setEnabled(false);
     	} else {saveItem.setEnabled(true);}
     	

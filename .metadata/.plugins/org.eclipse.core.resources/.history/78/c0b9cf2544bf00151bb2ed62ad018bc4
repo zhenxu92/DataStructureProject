@@ -1,15 +1,12 @@
 /*
  * ImageEnhancerWithUndoAndRedo.java
  * 
- * Also Implements A2E1 and A2E2
- * 
  * by Shen Jiang for CSE373 Assignment 2, Winter, 2016
  * This program is an enhanced version of one provides by
  * 
  * (c) By Steve Tanimoto,  January 2, 2016,
  * with contributions by Si J. Liu, 
  * and originally inspired by a tutorial example at Oracle.com.
- * 
  * This image-editing application includes support for semi-automated grading
  * when used in the CSE 373 course assignment on applying stacks and queues.
  * [CSE 373, Winter 2016, Assignment 2.]
@@ -207,8 +204,9 @@ public class ImageEnhancerWithUndoAndRedo extends Component implements ActionLis
         saveFileChooser.setDialogTitle("Save As...");
         
         FileNameExtensionFilter loadFilter = new FileNameExtensionFilter("Images(jpg/png/gif)", "jpg", "png", "gif");
-        FileNameExtensionFilter saveFilter = new FileNameExtensionFilter("Images(jpg/png/gif/JPG/PNG/GIF)",
-        		                                                         "jpg", "png", "gif", "JPG", "PNG", "GIF");
+        saveFileChooser.addChoosableFileFilter(loadFilter);
+        FileNameExtensionFilter saveFilter = new FileNameExtensionFilter("Images(jpg/png/gif/JPG/PNG/GIF)", "jpg", "png", "gif", "JPG", "PNG", "GIF");
+        saveFileChooser.addChoosableFileFilter(saveFilter);
         
         loadFileChooser.addChoosableFileFilter(loadFilter);
         loadFileChooser.setAcceptAllFileFilterUsed(true);

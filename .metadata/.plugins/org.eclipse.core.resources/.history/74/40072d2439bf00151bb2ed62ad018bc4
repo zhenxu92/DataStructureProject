@@ -1,15 +1,12 @@
 /*
  * ImageEnhancerWithUndoAndRedo.java
  * 
- * Also Implements A2E1 and A2E2
- * 
  * by Shen Jiang for CSE373 Assignment 2, Winter, 2016
  * This program is an enhanced version of one provides by
  * 
  * (c) By Steve Tanimoto,  January 2, 2016,
  * with contributions by Si J. Liu, 
  * and originally inspired by a tutorial example at Oracle.com.
- * 
  * This image-editing application includes support for semi-automated grading
  * when used in the CSE 373 course assignment on applying stacks and queues.
  * [CSE 373, Winter 2016, Assignment 2.]
@@ -39,10 +36,6 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
-import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileNameExtensionFilter;
-
-
 public class ImageEnhancerWithUndoAndRedo extends Component implements ActionListener {
 	private static final long serialVersionUID = 1L;
 	String startingImage = "Aeroplane-view-of-UW.png";
@@ -61,13 +54,6 @@ public class ImageEnhancerWithUndoAndRedo extends Component implements ActionLis
     private static JMenu fileMenu, editMenu, imageMenu;
     public static JMenuItem exitItem, undoItem, redoItem, darkenItem,
     	blurItem, sharpenItem, photoNegItem, thresholdItem;
-    
-    // Make these two menus public in case the autuograder needs to test it.
-    public static JMenuItem saveItem, loadItem;
-    
-    // File dialog pops when user choose "Save" or "Load".
-    private JFileChooser loadFileChooser, saveFileChooser;
-    
 
     // CSE 373 Students: Here, you should declare two variables to hold instances
     //  of your stack class, with one for Undo and one for Redo.
@@ -78,6 +64,7 @@ public class ImageEnhancerWithUndoAndRedo extends Component implements ActionLis
     // performed or not
     boolean isUndoPerformed;
     
+
     // A 3x3 filtering kernel for high-pass filtering:
     public static final float[] highPass = {
         0.f, -1.f,  0.f,
@@ -114,7 +101,7 @@ public class ImageEnhancerWithUndoAndRedo extends Component implements ActionLis
         photoNegItem.addActionListener(this);
         thresholdItem.addActionListener(this);
 
-    	
+    	fileMenu.add(exitItem);
     	editMenu.add(undoItem);
     	editMenu.add(redoItem);
     	imageMenu.add(darkenItem);
@@ -125,17 +112,6 @@ public class ImageEnhancerWithUndoAndRedo extends Component implements ActionLis
     	menuBar.add(fileMenu);
     	menuBar.add(editMenu);
     	menuBar.add(imageMenu);
-    	
-    	// Add "load Image" and " Save Image" menu item.
-    	loadItem = new JMenuItem("Load Image");
-    	saveItem = new JMenuItem("Save As...");
-    	
-    	loadItem.addActionListener(this);
-    	saveItem.addActionListener(this);
-    	
-    	fileMenu.add(loadItem);
-    	fileMenu.add(saveItem);
-    	fileMenu.add(exitItem);
     	
     	undoItem.setEnabled(false);
     	redoItem.setEnabled(false);
@@ -199,22 +175,6 @@ public class ImageEnhancerWithUndoAndRedo extends Component implements ActionLis
         // Set isUndoPerformed to be false by default
         isUndoPerformed = false;
         
-        // Set FileChoosers for load and save image.
-        loadFileChooser = new JFileChooser();
-        saveFileChooser = new JFileChooser();
-        
-        loadFileChooser.setDialogTitle("Load Image...");
-        saveFileChooser.setDialogTitle("Save As...");
-        
-        FileNameExtensionFilter loadFilter = new FileNameExtensionFilter("Images(jpg/png/gif)", "jpg", "png", "gif");
-        FileNameExtensionFilter saveFilter = new FileNameExtensionFilter("Images(jpg/png/gif/JPG/PNG/GIF)",
-        		                                                         "jpg", "png", "gif", "JPG", "PNG", "GIF");
-        
-        loadFileChooser.addChoosableFileFilter(loadFilter);
-        loadFileChooser.setAcceptAllFileFilterUsed(true);
-        saveFileChooser.addChoosableFileFilter(saveFilter);
-        saveFileChooser.setAcceptAllFileFilterUsed(true);
-             
     }
 
     public Dimension getPreferredSize() {
@@ -249,44 +209,6 @@ public class ImageEnhancerWithUndoAndRedo extends Component implements ActionLis
         //  these items when the user selects them.
 
     	//System.out.println("The actionEvent is "+e); // This can be useful when debugging.
-    	
-    	if (e.getSource() == loadItem) {
-    		// Pops up load file dialog
-    		int retVal = loadFileChooser.showOpenDialog(this);
- 
-    		if (retVal == JFileChooser.APPROVE_OPTION) {
-    	        try {
-    	            biTemp = ImageIO.read(loadFileChooser.getSelectedFile());
-    	            width = biTemp.getWidth(null);
-    	            height = biTemp.getHeight(null);
-    	            biWorking = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-    	            gWorking = biWorking.getGraphics();
-    	            gWorking.drawImage(biTemp, 0, 0, null);
-    	        } catch (IOException e1) {
-    	            System.out.println("Image could not be read: "+ loadFileChooser.getSelectedFile().getName());
-    	            System.exit(1);
-    	        }
-    			
-    		}
-    	}
-    	
-    	if (e.getSource() == saveItem) {
-    		// Pops up save image dialog.
-    		int retVal = saveFileChooser.showSaveDialog(this);
-    		
-    		if (retVal == JFileChooser.APPROVE_OPTION) {
-    			try {
-    				File savedFile = saveFileChooser.getSelectedFile();
-    				String extension = savedFile.getName().substring(savedFile.getName().lastIndexOf('.') + 1); 				
-    				ImageIO.write(biWorking, extension, savedFile);
-    			} catch (IOException e2) {
-    	            System.out.println("Image could not be saved: "+ saveFileChooser.getSelectedFile().getName());
-    	            System.exit(1);
-    			}
-    		}
-    		return;
-    	}
-    	
     	if (e.getSource()==exitItem) { System.exit(0); }
     	if (e.getSource()==blurItem) { blur();}
     	if (e.getSource()==sharpenItem) { sharpen(); }
@@ -305,10 +227,7 @@ public class ImageEnhancerWithUndoAndRedo extends Component implements ActionLis
     		redoStack.push(copyImage(biWorking));
     		isUndoPerformed = false;
     	}
-    	if (e.getSource() == redoItem) {
-    		biFiltered = redoStack.pop();
-    	}
-    	
+    	if (e.getSource() == redoItem) biFiltered = redoStack.pop();
     	// Make sure that the re-do is effective only when undo is just performed!
     	if (e.getSource() != undoItem && e.getSource() != redoItem) {
     		redoStack.clearAll();
@@ -319,11 +238,6 @@ public class ImageEnhancerWithUndoAndRedo extends Component implements ActionLis
     	else { undoItem.setEnabled(true); }
     	if (redoStack.isEmpty()) { redoItem.setEnabled(false); }
     	else { redoItem.setEnabled(true); }
-    	
-    	// Save Item cannot be used during undo and redo steps. 
-    	if (isUndoPerformed || !redoStack.isEmpty()) {
-    		saveItem.setEnabled(false);
-    	} else {saveItem.setEnabled(true);}
     	
         gWorking.drawImage(biFiltered, 0, 0, null); // Draw the pixels from biFiltered into biWorking.
         repaint(); // Ask Swing to update the screen.
